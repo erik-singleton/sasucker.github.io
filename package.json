@@ -1,0 +1,28 @@
+{
+  "name": "sasucker.github.io",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-uglify": "^0.8.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-ng-annotate": "^0.10.0",
+    "grunt-wiredep": "^2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sasucker/sasucker.github.io"
+  },
+  "author": "Erik Singleton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sasucker/sasucker.github.io/issues"
+  },
+  "homepage": "https://github.com/sasucker/sasucker.github.io"
+}

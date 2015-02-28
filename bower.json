@@ -1,0 +1,23 @@
+{
+  "name": "sasucker.github.io",
+  "version": "0.0.0",
+  "homepage": "https://github.com/sasucker/sasucker.github.io",
+  "authors": [
+    "Erik Singleton <erik.singleton@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.14",
+    "angular-animate": "~1.3.14",
+    "angular-ui-router": "~0.2.13",
+    "angular-resource": "~1.3.14"
+  }
+}
