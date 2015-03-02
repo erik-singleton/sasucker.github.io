@@ -11,15 +11,15 @@ module.exports = function(grunt) {
                 separator: ';'
             },
             dist: {
-                src: ['scripts/*.js', 'src/**/*.js'],
-                dest: 'dist/ces.js'
+                src: ['scripts/*.js', 'scripts/**/*.js'],
+                dest: 'dist/blizz.js'
             },
             assets: {
                 src: [
-                    'scripts/angular/**/*.min.js',
-                    'scripts/**/*.min.js',
-                    '!scripts/app/*.js',
-                    '!scripts/app/**/*.js',
+                    'bower_components/angular/**/*.min.js',
+                    'bower_components/**/*.min.js',
+                    '!bower_components/app/*.js',
+                    '!bower_components/app/**/*.js',
                 ],
                 dest: 'dist/assets.js'
             }
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', [
         'concat',
-        'uglify',
+        'ngAnnotate',
     ]);
     grunt.registerTask('minify', [
         'concat',
