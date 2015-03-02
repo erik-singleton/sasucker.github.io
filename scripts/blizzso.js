@@ -13,11 +13,27 @@ angular.module('blizzso', [
     $stateProvider
         .state('user', {
             url: '/',
+            resolve: {
+                userInfo: function(userProfile) {
+                    return userProfile.info().$promise;
+                },
+                userBadges: function(userProfile) {
+                    return userProfile.badges().$promise;
+                },
+                userTimeline: function(userProfile) {
+                    return userProfile.timeline().$promise;
+                },
+                userTags: function(userProfile) {
+                    return userProfile.tags().$promise;
+                }
+            },
             views: {
                 'bodycontent@': {
                     templateUrl: 'template/user/main.partial.html',
+                    controller: 'UserCtrl',
+                    controllerAs: 'user'
                 }
-            }
+            },
         })
         .state('login', {
             url: '/login',

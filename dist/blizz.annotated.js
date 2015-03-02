@@ -13,11 +13,27 @@ angular.module('blizzso', [
     $stateProvider
         .state('user', {
             url: '/',
+            resolve: {
+                userInfo: ['userProfile', function(userProfile) {
+                    return userProfile.info().$promise;
+                }],
+                userBadges: ['userProfile', function(userProfile) {
+                    return userProfile.badges().$promise;
+                }],
+                userTimeline: ['userProfile', function(userProfile) {
+                    return userProfile.timeline().$promise;
+                }],
+                userTags: ['userProfile', function(userProfile) {
+                    return userProfile.tags().$promise;
+                }]
+            },
             views: {
                 'bodycontent@': {
                     templateUrl: 'template/user/main.partial.html',
+                    controller: 'UserCtrl',
+                    controllerAs: 'user'
                 }
-            }
+            },
         })
         .state('login', {
             url: '/login',
@@ -149,6 +165,19 @@ angular.module('blizzso', [
     });
 }]);
 
+;angular.module('blizzso.user.controllers', [
+])
+
+.controller('UserCtrl', UserCtrl);
+
+
+function UserCtrl(userInfo, userBadges, userTimeline, userTags) {
+    this.info = userInfo.items;
+    this.badges = userBadges.items;
+    this.timeline = userTimeline.items;
+    this.tags = userTags.items;
+}
+UserCtrl.$inject = ['userInfo', 'userBadges', 'userTimeline', 'userTags'];
 ;;/**
  * @module blizzso.user
  */
@@ -210,5 +239,6 @@ angular.module('blizzso.user.services', [
 }]);
 ;angular.module('blizzso.user', [
     'blizzso.user.services',
+    'blizzso.user.controllers',
 //    'user.directives',
 ]);
