@@ -3,11 +3,28 @@
 <meta charset="utf-8">
 <head>
 <title></title>
+<link href="favicon.ico" rel="shortcut icon">
 <link href="css/screen.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<h1>Placeholder</h1>
-<div ui-view="bodycontent"></div>
+<div class="navbar">
+    <header class="nav-header">
+        <div class="grid container">
+            <div class="grid-33">
+                <a class="bnet-logo" ui-sref="user">Battle.net Overflow</a>
+            </div>
+            <div class="grid-66">
+                <ul class="menu">
+                    <li class="item home"><a href="https://us.battle.net">&nbsp;</a></li>
+                    <li class="item profile"><a ui-sref="user">Profile</a></li>
+                    <li class="item search"><a ui-sref="search">Search</a></li>
+                    <li class="item explore"><a ui-sref="search">Explore</a></li>
+                </ul>
+        </div>
+    </header>
+</div>
+<div class="main-body" ui-view="bodycontent"></div>
+<div class="ajax-loader" loader></div>
 <!-- bower:js -->
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>

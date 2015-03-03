@@ -2,6 +2,7 @@
 
 angular.module('blizzso', [
     'ui.router',
+    'blizzso.loader',
     'blizzso.login',
     'blizzso.user',
     'blizzso.search',
@@ -14,18 +15,6 @@ angular.module('blizzso', [
         .state('user', {
             url: '/',
             resolve: {
-                userInfo: function(userProfile) {
-                    return userProfile.info().$promise;
-                },
-                userBadges: function(userProfile) {
-                    return userProfile.badges().$promise;
-                },
-                userTimeline: function(userProfile) {
-                    return userProfile.timeline().$promise;
-                },
-                userTags: function(userProfile) {
-                    return userProfile.tags().$promise;
-                }
             },
             views: {
                 'bodycontent@': {
@@ -34,6 +23,11 @@ angular.module('blizzso', [
                     controllerAs: 'user'
                 }
             },
+            onEnter: function($state, userConfig) {
+                if (!userConfig.loggedIn()) {
+                    $state.go('login');
+                }
+            }
         })
         .state('login', {
             url: '/login',
@@ -68,7 +62,6 @@ angular.module('blizzso', [
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         if (!userConfig.loggedIn()) {
-            console.log(toState.name !== 'login');
             if (toState.name !== 'login') {
                 $location.path('/login');
             }

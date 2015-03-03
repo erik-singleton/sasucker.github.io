@@ -4,9 +4,10 @@ angular.module('blizzso.user.controllers', [
 .controller('UserCtrl', UserCtrl);
 
 
-function UserCtrl(userInfo, userBadges, userTimeline, userTags) {
-    this.info = userInfo.items;
-    this.badges = userBadges.items;
-    this.timeline = userTimeline.items;
-    this.tags = userTags.items;
+function UserCtrl(userProfile) {
+    var vm = this;
+    vm.info = userProfile.info();
+    vm.badges = userProfile.badges();
+    vm.timeline = userProfile.timeline();
+    vm.tags = userProfile.tags();
 }

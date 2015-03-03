@@ -2,6 +2,7 @@
 
 angular.module('blizzso', [
     'ui.router',
+    'blizzso.loader',
     'blizzso.login',
     'blizzso.user',
     'blizzso.search',
@@ -14,18 +15,6 @@ angular.module('blizzso', [
         .state('user', {
             url: '/',
             resolve: {
-                userInfo: function(userProfile) {
-                    return userProfile.info().$promise;
-                },
-                userBadges: function(userProfile) {
-                    return userProfile.badges().$promise;
-                },
-                userTimeline: function(userProfile) {
-                    return userProfile.timeline().$promise;
-                },
-                userTags: function(userProfile) {
-                    return userProfile.tags().$promise;
-                }
             },
             views: {
                 'bodycontent@': {
@@ -34,6 +23,11 @@ angular.module('blizzso', [
                     controllerAs: 'user'
                 }
             },
+            onEnter: function($state, userConfig) {
+                if (!userConfig.loggedIn()) {
+                    $state.go('login');
+                }
+            }
         })
         .state('login', {
             url: '/login',
@@ -68,12 +62,63 @@ angular.module('blizzso', [
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         if (!userConfig.loggedIn()) {
-            console.log(toState.name !== 'login');
             if (toState.name !== 'login') {
                 $location.path('/login');
             }
         }
     });
+});
+;angular.module('blizzso.loader.directives', [])
+
+
+.directive('loader', function($rootScope) {
+    return function(scope, elem, attr) {
+        scope.$on('loader_show', function() {
+            return elem.removeClass('ng-hide');
+        });
+
+        return scope.$on('loader_hide', function() {
+            return elem.addClass('ng-hide');
+        });
+    };
+});
+;angular.module('blizzso.loader', [
+    'blizzso.loader.directives',
+    'blizzso.loader.services'
+])
+
+/**
+ * @description
+ * Registers our AJAX interceptor with $httpProvider
+ */
+.config(function($httpProvider) {
+    $httpProvider.interceptors.push('blizzAjaxInterceptor');
+});
+;angular.module('blizzso.loader.services', [])
+
+
+.factory('blizzAjaxInterceptor', function($q, $rootScope) {
+    var num_loading = 0;
+
+    return {
+        request: function(config) {
+            num_loading++;
+            $rootScope.$broadcast('loader_show');
+            return config || $q.when(config);
+        },
+        response: function(resp) {
+            if ((--num_loading) === 0) {
+                $rootScope.$broadcast('loader_hide');
+            }
+            return resp || $q.when(resp);
+        },
+        responseError: function(resp) {
+            if (!(--num_loading)) {
+                $rootScope.$broadcast('loader_hide');
+            }
+            return $q.reject(resp);
+        }
+    };
 });
 ;angular.module('blizzso.login.directives', [
     'ui.router',
@@ -171,11 +216,12 @@ angular.module('blizzso', [
 .controller('UserCtrl', UserCtrl);
 
 
-function UserCtrl(userInfo, userBadges, userTimeline, userTags) {
-    this.info = userInfo.items;
-    this.badges = userBadges.items;
-    this.timeline = userTimeline.items;
-    this.tags = userTags.items;
+function UserCtrl(userProfile) {
+    var vm = this;
+    vm.info = userProfile.info();
+    vm.badges = userProfile.badges();
+    vm.timeline = userProfile.timeline();
+    vm.tags = userProfile.tags();
 }
 ;;/**
  * @module blizzso.user
@@ -211,20 +257,23 @@ angular.module('blizzso.user.services', [
         info: {
             method: 'GET',
             cache: true,
+            transformResponse: function(data) {
+                return JSON.parse(data).items[0];
+            }
         },
         badges: {
             method: 'GET',
             cache: true,
             params: {
                 verb: 'badges'
-            }
+            },
         },
         timeline: {
             method: 'GET',
             cache: true,
             params: {
                 verb: 'timeline'
-            }
+            },
         },
         tags: {
             method: 'GET',

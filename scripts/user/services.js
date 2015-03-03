@@ -32,20 +32,23 @@ angular.module('blizzso.user.services', [
         info: {
             method: 'GET',
             cache: true,
+            transformResponse: function(data) {
+                return JSON.parse(data).items[0];
+            }
         },
         badges: {
             method: 'GET',
             cache: true,
             params: {
                 verb: 'badges'
-            }
+            },
         },
         timeline: {
             method: 'GET',
             cache: true,
             params: {
                 verb: 'timeline'
-            }
+            },
         },
         tags: {
             method: 'GET',
