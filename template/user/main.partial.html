@@ -1,3 +1,107 @@
-<h1>{{ user.info.display_name }}</h1>
-<pre>{{ user.info }}</pre>
-<img ng-src="{{ user.info.profile_image }}" alt="User Icon" width="128" height="128" />
+<div class="container">
+    <div class="username-wrapper">
+        <h2 class="username">{{ user.info.display_name }}</h2>
+    </div>
+    <div class="grid profile-wrapper">
+        <div class="grid-40 glass">
+            <div class="gravatar position-left">
+                <img class="profile-image" data-ng-src="{{ user.info.profile_image }}" alt="User Icon" width="128" height="128" />
+                <div class="reputation">
+                    <label class="count">{{ user.info.reputation }}</label> Reputation
+                </div>
+            </div>
+            <div class="data position-left">
+                <h3 class="profile-header">Bio</h3>
+                <ul class="profile-info">
+                    <li>
+                        <span class="label">Website: </span>{{ user.info.website_url }}
+                    </li>
+                    <li>
+                        <span class="label">Location: </span>{{ user.info.location }}
+                    </li>
+                    <li>
+                        <span class="label">Age:</span> {{ user.info.age }}
+                    </li>
+                </ul>
+                <h3 class="profile-header">Stats</h3>
+                <ul class="profile-info">
+                    <li>
+                        <span class="label">Visits:</span> {{ user.info.view_count }}</span>
+                    </li>
+                    <li>
+                        <span class="label">Badges:</span>
+                        <div class="profile-badge-count">
+                            <span data-ng-repeat="(badge, count) in user.info.badge_counts">{{ badge }}: {{ count }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="grid-60">
+            <div class="about-me-wrapper blizzbox">
+                <h3 class="profile-header">About Me</h3>
+                <div class="about-me" data-ng-bind-html="user.info.about_me|unsafe"></div>
+            </div>
+        </div>
+    </div>
+    <div class="grid row">
+        <div class="badges grid-50">
+            <div class="infobox">
+                <h2 class="badge title">Badges</h2>
+                <div class="blizzbox">
+                    <div class="individual-badge-wrapper" ng-repeat="badge in user.badges.items">
+                        <a href="{{ badge.link }}"><span class="individual-badge {{ badge.rank }}">{{ badge.name }}</span></a>
+                        x{{ badge.award_count }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="timeline grid-50">
+            <div class="infobox position-right">
+                <h2 class="title">Timeline</h2>
+                <div class="blizzbox">
+                    <div class="item-wrapper">
+                        <div class="individual-item" ng-repeat="item in user.timeline.items">
+                            <div class="date-wrapper">
+                                <div class="month">{{ (item.creation_date*1000)|date : 'MMM' : 'UTC' }}</div>
+                                <div class="day">{{ (item.creation_date*1000)|date : 'd' : 'UTC' }}</div>
+                            </div>
+
+                            <div class="verb">{{ user.badgeConverter[item.timeline_type].verb }}</div>
+                            <div class="action-wrapper">
+                                <div ng-if="user.isBadge(item)" class="individual-badge-wrapper">
+                                    <a href=""><span class="{{ user.badgeConverter[item.timeline_type].slug }}">{{ item.detail }}</span></a>
+                                </div>
+                                <div ng-if="!user.isBadge(item)" class="individual-action-wrapper {{ user.badgeConverter[item.timeline_type].slug }}">
+                                    <span>{{ item.title }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid row">
+        <div class="favorites grid-50">
+            <div class="infobox">
+                <h2 class="title">Favorites</h2>
+                <div class="blizzbox">
+                    <div class="favorite-wrapper">
+                        <div class="individual-favorite" ng-repeat="fav in user.favorites.items">
+                            <div data-blizzso-question question="fav"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tags grid-50">
+            <div class="infobox position-right">
+                <h2 class="title">Tag Cloud</h2>
+                <div class="blizzbox">
+                    <div data-blizzso-tag-cloud tags="user.tags"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

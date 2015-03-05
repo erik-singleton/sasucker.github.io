@@ -1,0 +1,38 @@
+<div class="individual-question">
+    <div class="stats">
+        <div class="box votes">
+            <span class="num" title="{{ question.up_vote_count }} questions">{{ question.up_vote_count|nicenum }}</span>
+            <div class="label">Questions</div>
+        </div>
+        <div class="box answers" 
+             data-ng-class="{ 'answer-accepted': question.is_answered }">
+             <span class="num" title="{{ question.answer_count }} answers">{{ question.answer_count|nicenum }}</span>
+            <div class="label">Answers</div>
+        </div>
+        <div class="box views">
+            <span class="num" title="{{ question.view_count }} views">{{ question.view_count|nicenum }}</span>
+            <div class="label">Views</div>
+        </div>
+    </div>
+    <div class="question-text"><a href="{{ question.link }}">{{ question.title }}</a></div>
+    <div class="information">
+        <div class="tag-list">
+            <span data-ng-repeat="tag in question.tags">
+                <a href="http://stackoverflow.com/questions/tagged/{{ tag }}" target="_blank">
+                    <span class="individual-tag">
+                        {{ tag }}
+                    </span>
+                </a>
+            </span>
+            <div class="position-right">
+                <span class="question-date">{{ (question.creation_date*1000)|date : 'MM/dd/yyyy' : 'UTC' }}</span>
+                by
+                <a href="{{ question.owner.link }}">
+                    <span class="question-owner">
+                        {{ question.owner.display_name }}
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html ng-app="blizzso">
+<html data-ng-app="blizzso">
 <meta charset="utf-8">
 <head>
-<title></title>
+<title>Battle.net Overflow</title>
 <link href="favicon.ico" rel="shortcut icon">
 <link href="css/screen.css" rel="stylesheet" type="text/css">
 </head>
@@ -23,8 +23,11 @@
         </div>
     </header>
 </div>
-<div class="main-body" ui-view="bodycontent"></div>
-<div class="ajax-loader" loader></div>
+<div class="wrapper">
+    <div class="main-body" data-ui-view="bodycontent"></div>
+</div>
+<footer class="footer"></footer>
+<div class="ajax-loader" data-loader></div>
 <!-- bower:js -->
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>

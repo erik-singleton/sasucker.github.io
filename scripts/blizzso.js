@@ -4,8 +4,11 @@ angular.module('blizzso', [
     'ui.router',
     'blizzso.loader',
     'blizzso.login',
-    'blizzso.user',
+    'blizzso.question',
     'blizzso.search',
+    'blizzso.tagcloud',
+    'blizzso.user',
+    'blizzso.unsafe',
     'SEWrapper'
 ])
 

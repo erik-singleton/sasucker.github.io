@@ -32,6 +32,9 @@ angular.module('blizzso.user.services', [
         info: {
             method: 'GET',
             cache: true,
+            params: {
+                filter: '!-*f(6q9Yna_7'
+            },
             transformResponse: function(data) {
                 return JSON.parse(data).items[0];
             }
@@ -40,14 +43,16 @@ angular.module('blizzso.user.services', [
             method: 'GET',
             cache: true,
             params: {
-                verb: 'badges'
+                verb: 'badges',
+                pagesize: 50
             },
         },
         timeline: {
             method: 'GET',
             cache: true,
             params: {
-                verb: 'timeline'
+                verb: 'timeline',
+                pagesize: 5,
             },
         },
         tags: {
@@ -55,8 +60,21 @@ angular.module('blizzso.user.services', [
             cache: true,
             params: {
                 verb: 'tags',
-                sort: 'popular'
+                sort: 'name',
+                order: 'asc',
+                pagesize: 50
+            }
+        },
+        favorites: {
+            method: 'GET',
+            cache: true,
+            params: {
+                verb: 'favorites',
+                sort: 'activity',
+                order: 'desc',
+                filter: '!-*f(6pnzwZrc'
             }
         }
+
     });
 });
