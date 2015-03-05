@@ -6,9 +6,8 @@ angular.module('blizzso', [
     'blizzso.login',
     'blizzso.question',
     'blizzso.search',
-    'blizzso.tagcloud',
     'blizzso.user',
-    'blizzso.unsafe',
+    'blizzso.utils',
     'SEWrapper'
 ])
 

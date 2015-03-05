@@ -63,8 +63,8 @@
                     <div class="item-wrapper">
                         <div class="individual-item" ng-repeat="item in user.timeline.items">
                             <div class="date-wrapper">
-                                <div class="month">{{ (item.creation_date*1000)|date : 'MMM' : 'UTC' }}</div>
-                                <div class="day">{{ (item.creation_date*1000)|date : 'd' : 'UTC' }}</div>
+                                <div class="month">{{ item.creation_date|milli|date : 'MMM' : 'UTC' }}</div>
+                                <div class="day">{{ item.creation_date|milli|date : 'd' : 'UTC' }}</div>
                             </div>
 
                             <div class="verb">{{ user.badgeConverter[item.timeline_type].verb }}</div>

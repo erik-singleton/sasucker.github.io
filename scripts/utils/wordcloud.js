@@ -1,6 +1,7 @@
 /**
  * @description
- * Directive that takes in a stackexchange tag list, and
+ * Directive that takes in a stackexchange tag list 
+ * promise, waits for it to finish resolving, and
  * converts it into a word cloud
  *
  * https://api.stackexchange.com/docs/tags-on-users

@@ -25,7 +25,7 @@
                 </a>
             </span>
             <div class="position-right">
-                <span class="question-date">{{ (question.creation_date*1000)|date : 'MM/dd/yyyy' : 'UTC' }}</span>
+                <span class="question-date">{{ question.creation_date|milli|date : 'MM/dd/yyyy' : 'UTC' }}</span>
                 by
                 <a href="{{ question.owner.link }}">
                     <span class="question-owner">

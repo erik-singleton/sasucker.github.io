@@ -6,9 +6,8 @@ angular.module('blizzso', [
     'blizzso.login',
     'blizzso.question',
     'blizzso.search',
-    'blizzso.tagcloud',
     'blizzso.user',
-    'blizzso.unsafe',
+    'blizzso.utils',
     'SEWrapper'
 ])
 
@@ -372,6 +371,20 @@ angular.module('blizzso.user.services', [
 ]);
 ;/**
  * @description
+ * StackExchange api returns timestamps in seconds,
+ * javascript utilizes milliseconds to conver to 
+ * Date object
+ */
+angular.module('blizzso.milliseconds', [])
+
+
+.filter('milli', function() {
+    return function(inp) {
+        return parseInt(inp) * 1000;
+    }
+});
+;/**
+ * @description
  * Creates a filter to make numbers more readable up to billions
  */
 angular.module('blizzso.nicenum', [])
@@ -412,7 +425,18 @@ angular.module('blizzso.nicenum', [])
 });
 ;/**
  * @description
- * Directive that takes in a stackexchange tag list, and
+ * Groups up all of the utility modules into one utils module
+ */
+angular.module('blizzso.utils', [
+    'blizzso.milliseconds',
+    'blizzso.nicenum',
+    'blizzso.tagcloud',
+    'blizzso.unsafe'
+]); 
+;/**
+ * @description
+ * Directive that takes in a stackexchange tag list 
+ * promise, waits for it to finish resolving, and
  * converts it into a word cloud
  *
  * https://api.stackexchange.com/docs/tags-on-users
