@@ -1,6 +1,6 @@
 # Test - Front End Engineer (v2)
 
-## Intro
+### Intro
 
 This is a front end site that utilizes the Stack Exchange v2 API to provide a more epic StackOverflow.com user experience.
 
