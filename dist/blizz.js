@@ -1,6 +1,7 @@
 'use strict'
 
 angular.module('blizzso', [
+    'ngAnimate',
     'ui.router',
     'blizzso.loader',
     'blizzso.login',
@@ -8,6 +9,7 @@ angular.module('blizzso', [
     'blizzso.search',
     'blizzso.user',
     'blizzso.utils',
+    'hljsWrapper',
     'SEWrapper'
 ])
 
@@ -16,8 +18,6 @@ angular.module('blizzso', [
     $stateProvider
         .state('user', {
             url: '/',
-            resolve: {
-            },
             views: {
                 'bodycontent@': {
                     templateUrl: 'template/user/main.partial.html',
@@ -44,7 +44,42 @@ angular.module('blizzso', [
                 }
             }
         })
-
+        .state('search', {
+            url: '/search',
+            views: {
+                'bodycontent@': {
+                    templateUrl: 'template/search/main.partial.html',
+                    controller: 'SearchCtrl',
+                    controllerAs: 'search'
+                }
+            }
+        })
+        .state('search.terms', {
+            url: '/?q&sort&intitle&tagged&nottagged',
+            views: {
+                'searchview': {
+                    templateUrl: 'template/search/searchterms.partial.html',
+                    controller: 'SearchCtrl',
+                    controllerAs: 'search'
+                }
+            }
+        })
+        .state('question', {
+            url: '/question/:id',
+            resolve: {
+                question: function($stateParams, questionModel) {
+                    var id = $stateParams.id;
+                    return questionModel.get({ id: id }).$promise;
+                }
+            },
+            views: {
+                'bodycontent@': {
+                    templateUrl: 'template/question/main.partial.html',
+                    controller: 'QuestionCtrl',
+                    controllerAs: 'qc'
+                }
+            }
+        })
 })
                     
 
@@ -69,6 +104,33 @@ angular.module('blizzso', [
             }
         }
     });
+});
+;/**
+ * @description
+ * Wrapper for highlight.js
+ * https://highlightjs.org/
+ */
+angular.module('hljsWrapper', [])
+
+// Returns the hljs object and makes it injectable
+.factory('hljs', function($window) {
+    return $window.hljs;
+})
+
+// Transcludes and replaces, runs highlighting and auto digests
+.directive('hljsSnippet', function($timeout, $interpolate, hljs) {
+    function link(scope, elem, attrs) {
+        $timeout(function() {
+            hljs.initHighlighting();
+        });
+    }
+    return {
+        restrict: 'A',
+        template: '<div ng-transclude></div>',
+        replace: true,
+        transclude: true,
+        link: link
+    }
 });
 ;angular.module('blizzso.loader.directives', [])
 
@@ -164,6 +226,68 @@ angular.module('blizzso', [
 ;angular.module('blizzso.login', [
     'blizzso.login.directives'
 ]);
+;/**
+ * @description
+ * Controllers for Question module
+ */
+angular.module('blizzso.question.controllers', [])
+
+
+.controller('QuestionCtrl', QuestionCtrl);
+
+
+
+function QuestionCtrl($http, userConfig, SEConfig, question) {
+    var vm = this;
+    vm.$http = $http;
+    vm.userConfig = userConfig;
+    vm.SEConfig = SEConfig;
+    vm.question = question;
+    vm.commentLimit = 5;
+    vm.answerLimit = 10;
+    console.log(question);
+}
+
+QuestionCtrl.prototype.favorite = function() {
+    var vm = this;
+    var favorited = vm.question.favorited ? 'undo' : '';
+
+    // Payload for either favoriting or unfavoriting
+    var payload = {
+        method: 'POST',
+        url: 'https://api.stackexchange.com/2.2/questions/'+vm.question.question_id+'/favorite/'+favorited,
+        data: {
+            access_token: vm.userConfig.accessToken,
+            key: vm.SEConfig.key,
+            site: vm.userConfig.site,
+            filter: vm.SEConfig.filter
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        transformResponse: function(data) {
+            return JSON.parse(data).items[0];
+        },
+        // Transform data payload to shallow serialize
+        // As required by StackExchange API for POST-style endpoints
+        transformRequest: function(obj) {
+            var str = [];
+
+            for (var p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+                }
+            }
+            return str.join('&');
+        }
+    };
+    vm.$http(payload).then(function(resp) {
+        // Overwrite old question data with new question data
+        vm.question = angular.copy(resp.data);
+    }, function(resp) {
+        console.log(resp);
+    });
+};
 ;angular.module('blizzso.question.directives', [
     'blizzso.nicenum'
 ])
@@ -172,21 +296,81 @@ angular.module('blizzso', [
 .directive('blizzsoQuestion', function() {
     return {
         restrict: 'EA',
-        transclude: true,
         replace: true,
         scope: {
             question: '='
         },
         templateUrl: 'template/question/blizzsoquestion.partial.html',
     };
+})
+
+
+.directive('blizzsoAnswer', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            answer: '='
+        },
+        templateUrl: 'template/question/blizzsoanswer.partial.html'
+    };
+})
+
+
+.directive('blizzsoComment', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            comment: '=',
+            commentLimit: '='
+        },
+        templateUrl: 'template/question/blizzsocomment.partial.html'
+    };
 });
 
 ;angular.module('blizzso.question', [
-    'blizzso.question.directives'
+    'blizzso.question.controllers',
+    'blizzso.question.directives',
+    'blizzso.question.services'
 ])
 
 
 ;
+;/**
+ * @description
+ * Services for question module 
+ */
+angular.module('blizzso.question.services', [
+    'ngResource',
+    'blizzso.user',
+    'SEWrapper'
+])
+
+/**
+ * @description
+ * Returns questionModel factory that has methods associated with it
+ *
+ * Any method that requires a POST was not included due to the way 
+ * $resource handles its return response (as well as the payload it
+ * was sending.
+ */
+.factory('questionModel', function($resource, userConfig, SEConfig) {
+    return $resource('https://api.stackexchange.com/2.2/questions/:id', {
+        access_token: userConfig.accessToken,
+        key: SEConfig.key,
+        filter: SEConfig.filter,
+        site: userConfig.site
+    }, {
+        get: {
+            method: 'GET',
+            cache: true,
+            transformResponse: function(data) {
+                return JSON.parse(data).items[0];
+            }
+        },
+    });
+});
 ;angular.module('SEWrapper', [])
 
 
@@ -200,6 +384,7 @@ angular.module('blizzso', [
     key: 'Re3GNAs1lf8dHOTZn3S5Gw((',
     channelUrl: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/blank/',
     redirect_uri: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/#/',
+    filter: '!Wq.reBhTC*mybEAh961k3.)jNlZdP5g-wIcnBX6',
 })
 
 /**
@@ -210,7 +395,20 @@ angular.module('blizzso', [
 .factory('SE', function($window) {
     return $window.SE;
 });
+;angular.module('blizzso.search.controllers', [
+
+])
+
+
+.controller('SearchCtrl', SearchCtrl);
+
+
+function SearchCtrl($stateParams) {
+    var vm = this;
+    vm.$stateParams = $stateParams;
+}
 ;angular.module('blizzso.search', [
+    'blizzso.search.controllers',
     'blizzso.search.services'
 ])
 ;angular.module('blizzso.search.services', [
@@ -313,14 +511,12 @@ angular.module('blizzso.user.services', [
     return $resource('https://api.stackexchange.com/2.2/me/:verb', {
         access_token: userConfig.accessToken,
         site: userConfig.site,
-        key: SEConfig.key
+        key: SEConfig.key,
+        filter: SEConfig.filter
     }, {
         info: {
             method: 'GET',
             cache: true,
-            params: {
-                filter: '!-*f(6q9Yna_7'
-            },
             transformResponse: function(data) {
                 return JSON.parse(data).items[0];
             }
@@ -358,7 +554,6 @@ angular.module('blizzso.user.services', [
                 verb: 'favorites',
                 sort: 'activity',
                 order: 'desc',
-                filter: '!-*f(6pnzwZrc'
             }
         }
 
@@ -392,6 +587,9 @@ angular.module('blizzso.nicenum', [])
 
 .filter('nicenum', function() {
     return function(input) {
+        if (input === 0) return 0;
+
+
         var abbreviations = ['k', 'm', 'b'];
         var num = input;
 

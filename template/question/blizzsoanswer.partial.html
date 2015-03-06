@@ -1,0 +1,38 @@
+<div class="answer-wrapper">
+    <div class="answer-stats">
+        <ul>
+            <li class="section">
+                Asked <span class="highlight date" title="{{ answer.creation_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ answer.creation_date|milli|date : 'MMM d, yyyy' : 'UTC' }}</span>
+            </li>
+            <li class="section" data-ng-if="answer.last_edit_date">
+                Last Edited <span class="highlight date" title="{{ answer.last_edit_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ answer.last_edit_date|milli|date : 'MMM d, yyyy' : 'UTC' }}</span>
+            </li>
+            <li class="section">
+                Last Activity <span class="highlight date" title="{{ answer.last_activity_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ answer.last_activity_date|milli|date : 'MMM d, yyyy' : 'UTC' }}</span>
+            </li>
+        </ul>
+    </div>
+    <div class="answer-content-wrapper grid" data-hljs-snippet>
+        <div class="owner-wrapper grid-15">
+            <a href="{{ answer.owner.link }}">
+                <img class="profile-image" data-ng-src="{{ answer.owner.profile_image }}" alt="{{ answer.owner.display_name }} profile image">
+            </a>
+            <a href="{{ answer.owner.link }}">
+                <div class="owner-name">{{ answer.owner.display_name }}</div>
+            </a>
+            <div class="rep-count" title="Reputation count {{ answer.owner.reputation }}">{{ answer.owner.reputation|nicenum }} Rep</div>
+            <div class="upvote-count">{{ answer.up_vote_count }}</div>
+            <div class="accepted" data-ng-if="answer.is_accepted"></div>
+        </div>
+        <div class="answer-content grid-85">
+            <div class="blizzbox">
+                <div data-ng-bind-html="answer.body|unsafe"></div>
+            </div>
+            <div class="comment-wrapper">
+                <div class="comment" data-ng-repeat="comment in answer.comments">
+                    <div data-blizzso-comment data-comment="comment">{{ comment }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="container">
+    <div class="question-wrapper">
+        <h3 class="title" data-ng-bind-html="qc.question.title|unsafe"></h3>
+        <div class="question-stats">
+            <ul>
+                <li class="section">
+                    Asked <span class="highlight date" title="{{ qc.question.creation_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ qc.question.creation_date|milli|date : 'MMM d, yyyy' : 'UTC' }}</span>
+                </li>
+                <li class="section" data-ng-if="qc.question.last_edit_date">
+                    Last Edited <span class="highlight date" title="{{ qc.question.last_edit_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ qc.question.last_edit_date|milli|date : 'MMM d, yyyy' : 'UTC' }}</span>
+                </li>
+                <li class="section">
+                    Last Activity <span class="highlight date" title="{{ qc.question.last_activity_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ qc.question.last_activity_date|milli|date : 'MMM d, yyyy' : 'UTC' }}</span>
+                </li>
+                <li class="section">
+                    Viewed <span class="highlight num" title="{{ qc.question.view_count }} views">{{ qc.question.view_count|nicenum }}</span>
+                </li>
+            </ul>
+        </div>
+        <div class="question-content-wrapper grid" data-hljs-snippet>
+            <div class="owner-wrapper grid-15">
+                <a href="{{ qc.question.owner.link }}">
+                    <img class="profile-image" data-ng-src="{{ qc.question.owner.profile_image }}" alt="{{ qc.question.owner.display_name }} profile image">
+                </a>
+                <a href="{{ qc.question.owner.link }}">
+                    <div class="owner-name">{{ qc.question.owner.display_name }}</div>
+                </a>
+                <div class="rep-count" title="Reputation count {{ qc.question.owner.reputation }}">{{ qc.question.owner.reputation|nicenum }} Rep</div>
+                <div class="upvote-count">{{ qc.question.up_vote_count }}</div>
+                <div class="favorite" data-ng-class="{ favorited: qc.question.favorited }" data-ng-click="qc.favorite()"></div>
+            </div>
+            <div class="question-content grid-85">
+                <div class="blizzbox">
+                    <div data-ng-bind-html="qc.question.body|unsafe"></div>
+                    <hr>
+                    <div class="tag-list">
+                        <span data-ng-repeat="tag in qc.question.tags">
+                            <a href="http://stackoverflow.com/questions/tagged/{{ tag }}" target="_blank">
+                                <span class="individual-tag">
+                                    {{ tag }}
+                                </span>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="comment-wrapper">
+                    <div class="comment" data-ng-repeat="comment in qc.question.comments | limitTo: qc.commentLimit">
+                        <div data-blizzso-comment data-comment="comment"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-ng-repeat="answer in qc.question.answers | limitTo: qc.answerLimit">
+            <div data-blizzso-answer data-answer="answer" data-commentLimit="5"></div>
+        </div>
+    </div>
+</div>

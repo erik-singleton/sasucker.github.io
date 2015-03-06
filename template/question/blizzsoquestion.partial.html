@@ -14,7 +14,7 @@
             <div class="label">Views</div>
         </div>
     </div>
-    <div class="question-text"><a href="{{ question.link }}">{{ question.title }}</a></div>
+    <div class="question-text"><a ui-sref="question({ id: question.question_id })" data-ng-bind-html="question.title|unsafe"></a></div>
     <div class="information">
         <div class="tag-list">
             <span data-ng-repeat="tag in question.tags">

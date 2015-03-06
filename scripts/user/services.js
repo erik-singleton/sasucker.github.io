@@ -27,14 +27,12 @@ angular.module('blizzso.user.services', [
     return $resource('https://api.stackexchange.com/2.2/me/:verb', {
         access_token: userConfig.accessToken,
         site: userConfig.site,
-        key: SEConfig.key
+        key: SEConfig.key,
+        filter: SEConfig.filter
     }, {
         info: {
             method: 'GET',
             cache: true,
-            params: {
-                filter: '!-*f(6q9Yna_7'
-            },
             transformResponse: function(data) {
                 return JSON.parse(data).items[0];
             }
@@ -72,7 +70,6 @@ angular.module('blizzso.user.services', [
                 verb: 'favorites',
                 sort: 'activity',
                 order: 'desc',
-                filter: '!-*f(6pnzwZrc'
             }
         }
 

@@ -6,12 +6,36 @@ angular.module('blizzso.question.directives', [
 .directive('blizzsoQuestion', function() {
     return {
         restrict: 'EA',
-        transclude: true,
         replace: true,
         scope: {
             question: '='
         },
         templateUrl: 'template/question/blizzsoquestion.partial.html',
+    };
+})
+
+
+.directive('blizzsoAnswer', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            answer: '='
+        },
+        templateUrl: 'template/question/blizzsoanswer.partial.html'
+    };
+})
+
+
+.directive('blizzsoComment', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+            comment: '=',
+            commentLimit: '='
+        },
+        templateUrl: 'template/question/blizzsocomment.partial.html'
     };
 });
 

@@ -11,6 +11,7 @@ angular.module('SEWrapper', [])
     key: 'Re3GNAs1lf8dHOTZn3S5Gw((',
     channelUrl: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/blank/',
     redirect_uri: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/#/',
+    filter: '!Wq.reBhTC*mybEAh961k3.)jNlZdP5g-wIcnBX6',
 })
 
 /**

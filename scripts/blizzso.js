@@ -1,6 +1,7 @@
 'use strict'
 
 angular.module('blizzso', [
+    'ngAnimate',
     'ui.router',
     'blizzso.loader',
     'blizzso.login',
@@ -8,6 +9,7 @@ angular.module('blizzso', [
     'blizzso.search',
     'blizzso.user',
     'blizzso.utils',
+    'hljsWrapper',
     'SEWrapper'
 ])
 
@@ -16,8 +18,6 @@ angular.module('blizzso', [
     $stateProvider
         .state('user', {
             url: '/',
-            resolve: {
-            },
             views: {
                 'bodycontent@': {
                     templateUrl: 'template/user/main.partial.html',
@@ -44,7 +44,42 @@ angular.module('blizzso', [
                 }
             }
         })
-
+        .state('search', {
+            url: '/search',
+            views: {
+                'bodycontent@': {
+                    templateUrl: 'template/search/main.partial.html',
+                    controller: 'SearchCtrl',
+                    controllerAs: 'search'
+                }
+            }
+        })
+        .state('search.terms', {
+            url: '/?q&sort&intitle&tagged&nottagged',
+            views: {
+                'searchview': {
+                    templateUrl: 'template/search/searchterms.partial.html',
+                    controller: 'SearchCtrl',
+                    controllerAs: 'search'
+                }
+            }
+        })
+        .state('question', {
+            url: '/question/:id',
+            resolve: {
+                question: function($stateParams, questionModel) {
+                    var id = $stateParams.id;
+                    return questionModel.get({ id: id }).$promise;
+                }
+            },
+            views: {
+                'bodycontent@': {
+                    templateUrl: 'template/question/main.partial.html',
+                    controller: 'QuestionCtrl',
+                    controllerAs: 'qc'
+                }
+            }
+        })
 })
                     
 

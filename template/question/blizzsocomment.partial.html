@@ -1,0 +1,12 @@
+<div class="individual-comment">
+    <div class="upvote-wrapper">
+        {{ comment.score|nicenum }}
+    </div>
+    <div class="comment-info-wrapper">
+        <span class="body" ng-bind-html="comment.body|unsafe"></span>
+        <span class="owner">&mdash; 
+            <a href="{{ comment.owner.link }}">{{ comment.owner.display_name }}</a>
+        </span>
+        <span class="date" title="{{ comment.creation_date|milli|date : 'yyyy-dd-MM HH:mm:ss' : 'UTC' }}">{{ comment.creation_date|milli|date: 'MMM d, yyyy' : 'UTC' }}</span>
+    </div>
+</div>
