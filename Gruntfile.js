@@ -18,6 +18,7 @@ module.exports = function(grunt) {
                 src: [
                     'bower_components/angular/**/*.min.js',
                     'bower_components/**/*.min.js',
+                    'bower_components/stackexchange/all.js',
                     '!bower_components/app/*.js',
                     '!bower_components/app/**/*.js',
                 ],
