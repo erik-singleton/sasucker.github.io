@@ -1,5 +1,6 @@
 'use strict'
 
+// Load all required modules
 angular.module('blizzso', [
     'ngAnimate',
     'ui.router',
@@ -13,41 +14,58 @@ angular.module('blizzso', [
     'SEWrapper'
 ])
 
+/**
+ * @description
+ * I like to have all of my states defined under one config, but if
+ * the app was larger, I would probably define each module's states
+ * within itself; not sure how effective that would be though for 
+ * formatting purposes.
+ */
 .config(function($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
     $stateProvider
         .state('user', {
             url: '/',
             views: {
-                'bodycontent@': {
+                'bodycontent': {
                     templateUrl: 'template/user/main.partial.html',
                     controller: 'UserCtrl',
                     controllerAs: 'user'
                 }
             },
-            onEnter: function($state, userConfig) {
-                if (!userConfig.loggedIn()) {
-                    $state.go('login');
+        })
+        .state('user.logout', {
+            url: 'logout',
+            views: {
+                'bodycontent@': {
+                    template: '<div></div>'
                 }
+            },
+            onEnter: function($state, $window, userConfig) {
+                $window.localStorage.removeItem('accessToken');
+                $window.localStorage.removeItem('expirationToken');
+                userConfig.accessToken = null;
+                $state.go('user.login');
             }
         })
-        .state('login', {
-            url: '/login',
+        .state('user.login', {
+            url: 'login',
             views: {
                 'bodycontent@': {
                     templateUrl: 'template/login/main.partial.html',
                 }
             },
             onEnter: function($state, userConfig) {
+                console.log('hi im login');
                 if (userConfig.loggedIn()) {
-                    $state.go('user');
+                    $state.go('^');
                 }
             }
         })
         .state('search', {
             url: '/search',
             views: {
-                'bodycontent@': {
+                'bodycontent': {
                     templateUrl: 'template/search/main.partial.html',
                     controller: 'SearchCtrl',
                     controllerAs: 'search'
@@ -55,7 +73,19 @@ angular.module('blizzso', [
             }
         })
         .state('search.terms', {
-            url: '/?q&sort&intitle&tagged&nottagged',
+            url: '/?q&sort&intitle&tagged&nottagged&page',
+            resolve: {
+                searchModel: function($stateParams, searchModel) {
+                    var s = $stateParams;
+                    return searchModel.search({
+                        intitle: s.intitle,
+                        nottagged: s.nottagged,
+                        page: s.page,
+                        sort: s.sort,
+                        tagged: s.tagged,
+                    }).$promise;
+                }
+            },
             views: {
                 'searchview': {
                     templateUrl: 'template/search/searchterms.partial.html',
@@ -73,7 +103,7 @@ angular.module('blizzso', [
                 }
             },
             views: {
-                'bodycontent@': {
+                'bodycontent': {
                     templateUrl: 'template/question/main.partial.html',
                     controller: 'QuestionCtrl',
                     controllerAs: 'qc'
@@ -82,13 +112,21 @@ angular.module('blizzso', [
         })
 })
                     
-
+/**
+ * @description
+ * On run, initialize the StackExchange API with the proper config
+ * Check if there's an active session in Storage, if so set it to 
+ * userConfig.
+ *
+ * Listen on every state change, if user isn't logged in redirect to 
+ * login path.  Couldn't use $state here because it's not initialized on
+ * app.run I guess.
+ */
 .run(function($rootScope, $location, $window, SE, SEConfig, userConfig) {
     SE.init({
         clientId: SEConfig.clientId,
         key: SEConfig.key,
         channelUrl: SEConfig.channelUrl,
-        redirect_url: SEConfig.redirect_url,
         complete: function(data) {
         }
     });
@@ -100,7 +138,9 @@ angular.module('blizzso', [
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         if (!userConfig.loggedIn()) {
             if (toState.name !== 'login') {
-                $location.path('/login');
+                $timeout(function() {
+                    $location.path('/login');
+                });
             }
         }
     });

@@ -1,0 +1,15 @@
+<div class="tag-cloud">
+    <h3 class="title">Tags in Results</h3>
+    <span data-ng-repeat="(tag, count) in tags" 
+        style="font-size: {{ baseSize + ((count/maxNum)*maxSize) }}px">
+        <!-- This clears the params that are already existing -->
+        <a ui-sref="search.terms({ 
+                        intitle: null,
+                        page: null,
+                        tagged: tag,
+                        nottagged: null
+                    })" class="tag-item">
+            {{ tag }}
+        </a>
+    </span>
+</div>

@@ -1,4 +1,22 @@
-<div class="grid container">
-    <h1>Searching!</h1>
+<div class="container">
+    <div class="search-wrapper grid">
+        <h1 class="title">Search</h1>
+        <div class="search-input grid-50">
+            <form data-ng-submit="search.submit()">
+                <label for="title">Terms in Title</label>
+                <input id="title" class="search-bar" type="text" data-ng-model="search.terms.title">
+                <div class="tag-input grid-50">
+                    <label for="tags">Tags</label>
+                    <input id="tags" class="tag-bar" type="text" data-ng-model="search.terms.tags">
+                </div>
+                <div class="nottag-input grid-50">
+                    <label for="nottags">Exclude Tags</label>
+                    <input id="nottags" class="nottag-bar" type="text" data-ng-model="search.terms.nottags">
+                </div>
+                <a class="btn submit" data-ng-click="search.submit()">Search</a>
+                <input type="submit" class="hidden" value="submit">
+            </form>
+        </div>
+    </div>
     <div data-ui-view="searchview"></div>
 </div>

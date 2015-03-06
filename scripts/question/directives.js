@@ -1,3 +1,7 @@
+/**
+ * @description
+ * Directive elements for Questions, Answers, and Comments
+ */
 angular.module('blizzso.question.directives', [
     'blizzso.nicenum'
 ])

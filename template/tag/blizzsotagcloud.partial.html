@@ -1,7 +1,7 @@
 <div class="tag-cloud">
     <span data-ng-repeat="tag in tags.items" 
         style="font-size: {{ baseSize + ((tag.count/maxNum)*maxSize) }}px">
-        <a href="http://stackoverflow.com/questions/tagged/{{ tag.name }}" class="tag-item">
+        <a ui-sref="search.terms({ tagged: tag.name })" class="tag-item">
             {{ tag.name }}
         </a>
     </span>

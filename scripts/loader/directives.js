@@ -1,3 +1,9 @@
+/**
+ * @description
+ * Define the directive for the loader element
+ *
+ * Listen for broadcasted loader events and show/hide as necessary
+ */
 angular.module('blizzso.loader.directives', [])
 
 

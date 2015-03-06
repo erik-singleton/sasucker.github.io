@@ -9,7 +9,6 @@
 angular.module('blizzso.tagcloud', [])
 
 
-
 .directive('blizzsoTagCloud', function() {
     function link(scope, elem, attr) {
         scope.baseSize = 11;
@@ -18,6 +17,7 @@ angular.module('blizzso.tagcloud', [])
             scope.tags.items = data.items;
             scope.maxNum = 0;
 
+            // Vanilla for loop used for speed
             for (var i=0, len=scope.tags.items.length; i<len; i++) {
                 if (scope.maxNum < scope.tags.items[i].count) {
                     scope.maxNum = scope.tags.items[i].count;

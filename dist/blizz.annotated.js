@@ -1,5 +1,6 @@
 'use strict'
 
+// Load all required modules
 angular.module('blizzso', [
     'ngAnimate',
     'ui.router',
@@ -13,41 +14,58 @@ angular.module('blizzso', [
     'SEWrapper'
 ])
 
+/**
+ * @description
+ * I like to have all of my states defined under one config, but if
+ * the app was larger, I would probably define each module's states
+ * within itself; not sure how effective that would be though for 
+ * formatting purposes.
+ */
 .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
     $stateProvider
         .state('user', {
             url: '/',
             views: {
-                'bodycontent@': {
+                'bodycontent': {
                     templateUrl: 'template/user/main.partial.html',
                     controller: 'UserCtrl',
                     controllerAs: 'user'
                 }
             },
-            onEnter: ['$state', 'userConfig', function($state, userConfig) {
-                if (!userConfig.loggedIn()) {
-                    $state.go('login');
+        })
+        .state('user.logout', {
+            url: 'logout',
+            views: {
+                'bodycontent@': {
+                    template: '<div></div>'
                 }
+            },
+            onEnter: ['$state', '$window', 'userConfig', function($state, $window, userConfig) {
+                $window.localStorage.removeItem('accessToken');
+                $window.localStorage.removeItem('expirationToken');
+                userConfig.accessToken = null;
+                $state.go('user.login');
             }]
         })
-        .state('login', {
-            url: '/login',
+        .state('user.login', {
+            url: 'login',
             views: {
                 'bodycontent@': {
                     templateUrl: 'template/login/main.partial.html',
                 }
             },
             onEnter: ['$state', 'userConfig', function($state, userConfig) {
+                console.log('hi im login');
                 if (userConfig.loggedIn()) {
-                    $state.go('user');
+                    $state.go('^');
                 }
             }]
         })
         .state('search', {
             url: '/search',
             views: {
-                'bodycontent@': {
+                'bodycontent': {
                     templateUrl: 'template/search/main.partial.html',
                     controller: 'SearchCtrl',
                     controllerAs: 'search'
@@ -55,7 +73,19 @@ angular.module('blizzso', [
             }
         })
         .state('search.terms', {
-            url: '/?q&sort&intitle&tagged&nottagged',
+            url: '/?q&sort&intitle&tagged&nottagged&page',
+            resolve: {
+                searchModel: ['$stateParams', 'searchModel', function($stateParams, searchModel) {
+                    var s = $stateParams;
+                    return searchModel.search({
+                        intitle: s.intitle,
+                        nottagged: s.nottagged,
+                        page: s.page,
+                        sort: s.sort,
+                        tagged: s.tagged,
+                    }).$promise;
+                }]
+            },
             views: {
                 'searchview': {
                     templateUrl: 'template/search/searchterms.partial.html',
@@ -73,7 +103,7 @@ angular.module('blizzso', [
                 }]
             },
             views: {
-                'bodycontent@': {
+                'bodycontent': {
                     templateUrl: 'template/question/main.partial.html',
                     controller: 'QuestionCtrl',
                     controllerAs: 'qc'
@@ -82,13 +112,21 @@ angular.module('blizzso', [
         })
 }])
                     
-
+/**
+ * @description
+ * On run, initialize the StackExchange API with the proper config
+ * Check if there's an active session in Storage, if so set it to 
+ * userConfig.
+ *
+ * Listen on every state change, if user isn't logged in redirect to 
+ * login path.  Couldn't use $state here because it's not initialized on
+ * app.run I guess.
+ */
 .run(['$rootScope', '$location', '$window', 'SE', 'SEConfig', 'userConfig', function($rootScope, $location, $window, SE, SEConfig, userConfig) {
     SE.init({
         clientId: SEConfig.clientId,
         key: SEConfig.key,
         channelUrl: SEConfig.channelUrl,
-        redirect_url: SEConfig.redirect_url,
         complete: function(data) {
         }
     });
@@ -100,7 +138,9 @@ angular.module('blizzso', [
     $rootScope.$on('$stateChangeStart', function(event, toState, toStateParams) {
         if (!userConfig.loggedIn()) {
             if (toState.name !== 'login') {
-                $location.path('/login');
+                $timeout(function() {
+                    $location.path('/login');
+                });
             }
         }
     });
@@ -132,7 +172,13 @@ angular.module('hljsWrapper', [])
         link: link
     }
 }]);
-;angular.module('blizzso.loader.directives', [])
+;/**
+ * @description
+ * Define the directive for the loader element
+ *
+ * Listen for broadcasted loader events and show/hide as necessary
+ */
+angular.module('blizzso.loader.directives', [])
 
 
 .directive('loader', ['$rootScope', function($rootScope) {
@@ -158,7 +204,14 @@ angular.module('hljsWrapper', [])
 .config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push('blizzAjaxInterceptor');
 }]);
-;angular.module('blizzso.loader.services', [])
+;/**
+ * @description
+ * Define factory to register with AJAX requests
+ * For each request, add to the number of loading elements
+ * for each response (error or not) reduce the number of 
+ * loading elements
+ */
+angular.module('blizzso.loader.services', [])
 
 
 .factory('blizzAjaxInterceptor', ['$q', '$rootScope', function($q, $rootScope) {
@@ -184,24 +237,30 @@ angular.module('hljsWrapper', [])
         }
     };
 }]);
-;angular.module('blizzso.login.directives', [
+;/**
+ * @description
+ * Login directive that utilizes the StackExchange API
+ * to retrieve a new token from SE
+ *
+ * Once complete, place token in Storage and set userConfig
+ * accessToken equal to it as well
+ */
+angular.module('blizzso.login.directives', [
     'ui.router',
     'blizzso.user',
     'SEWrapper',
 ])
 
 
-
-.directive('blizzsoLogin', ['$state', 'SEConfig', 'SE', 'userConfig', function($state, SEConfig, SE, userConfig) {
+.directive('blizzsoLogin', ['$state', '$window', 'SEConfig', 'SE', 'userConfig', function($state, $window, SEConfig, SE, userConfig) {
     function link(scope, ele, attr) {
         scope.login = function() {
             SE.authenticate({
                 success: function(data) {
-                    localStorage.setItem('accessToken', data.accessToken);
-                    localStorage.setItem('expirationDate', data.expirationDate);
+                    $window.localStorage.setItem('accessToken', data.accessToken);
+                    $window.localStorage.setItem('expirationDate', data.expirationDate);
                     userConfig.accessToken = data.accessToken;
                     $state.go('user');
-
                 },
                 error: function(data) {
                     console.log(data);
@@ -245,10 +304,18 @@ function QuestionCtrl($http, userConfig, SEConfig, question) {
     vm.question = question;
     vm.commentLimit = 5;
     vm.answerLimit = 10;
-    console.log(question);
 }
 QuestionCtrl.$inject = ['$http', 'userConfig', 'SEConfig', 'question'];
 
+
+/**
+ * @description
+ * Favoriting has to be done without $resource due to how the 
+ * data is returned.  I couldn't get it to transformResponse in
+ * a format that was useable
+ *
+ * I spent longer than I care to admit trying to get that to work
+ */
 QuestionCtrl.prototype.favorite = function() {
     var vm = this;
     var favorited = vm.question.favorited ? 'undo' : '';
@@ -289,7 +356,11 @@ QuestionCtrl.prototype.favorite = function() {
         console.log(resp);
     });
 };
-;angular.module('blizzso.question.directives', [
+;/**
+ * @description
+ * Directive elements for Questions, Answers, and Comments
+ */
+angular.module('blizzso.question.directives', [
     'blizzso.nicenum'
 ])
 
@@ -354,7 +425,7 @@ angular.module('blizzso.question.services', [
  *
  * Any method that requires a POST was not included due to the way 
  * $resource handles its return response (as well as the payload it
- * was sending.
+ * was sending.)
  */
 .factory('questionModel', ['$resource', 'userConfig', 'SEConfig', function($resource, userConfig, SEConfig) {
     return $resource('https://api.stackexchange.com/2.2/questions/:id', {
@@ -384,7 +455,6 @@ angular.module('blizzso.question.services', [
     clientId: 4378,
     key: 'Re3GNAs1lf8dHOTZn3S5Gw((',
     channelUrl: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/blank/',
-    redirect_uri: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/#/',
     filter: '!Wq.reBhTC*mybEAh961k3.)jNlZdP5g-wIcnBX6',
 })
 
@@ -403,17 +473,72 @@ angular.module('blizzso.question.services', [
 
 .controller('SearchCtrl', SearchCtrl);
 
-
-function SearchCtrl($stateParams) {
+function SearchCtrl($stateParams, $state, searchModel) {
     var vm = this;
+    vm.terms = {
+        nottags: '',
+        sort: 'relevance',
+        tags: ''
+    };
     vm.$stateParams = $stateParams;
+    vm.$state = $state;
+    vm.results = searchModel;
+    vm.currentPage = searchModel.page;
 }
-SearchCtrl.$inject = ['$stateParams'];
+SearchCtrl.$inject = ['$stateParams', '$state', 'searchModel'];
+
+/**
+ * @description
+ * Submits to search endpoint certain parameters
+ *
+ * Splits tags/nottags and joins them with semi-colons, as
+ * the api accepts semi-colon split list items
+ */
+SearchCtrl.prototype.submit = function() {
+    var vm = this;
+    var joinedTags = vm.terms.tags.split(' ').join(';');
+    var joinedNotTags = vm.terms.nottags.split(' ').join(';');
+    vm.$state.go('search.terms', {
+        tagged: joinedTags,
+        nottagged: joinedNotTags,
+        intitle: vm.terms.title,
+        page: null,
+        sort: vm.terms.sort
+    });
+};
+;angular.module('blizzso.search.directives', [])
+
+
+.directive('blizzsoResultCloud', ['$timeout', function($timeout) {
+    function link(scope, elem, attr) {
+        scope.baseSize = 11;
+        scope.maxSize = 24;
+        scope.maxNum = scope.results.maxTagCount;
+        scope.tags = scope.results.tags;
+        console.log(scope.results);
+    }
+    return {
+        restrict: 'EA',
+        transclude: true,
+        replace: true,
+        scope: {
+            results: '=' 
+        },
+        templateUrl: 'template/search/blizzsoresultcloud.partial.html',
+        link: link
+    };
+}])
 ;angular.module('blizzso.search', [
     'blizzso.search.controllers',
+    'blizzso.search.directives',
     'blizzso.search.services'
 ])
-;angular.module('blizzso.search.services', [
+;/**
+ * @description
+ * Factory for search model
+ * Parses result data for tag list
+ */
+angular.module('blizzso.search.services', [
     'ngResource',
     'SEWrapper',
     'blizzso.user'
@@ -422,15 +547,47 @@ SearchCtrl.$inject = ['$stateParams'];
 
 .factory('searchModel', ['$resource', 'userConfig', 'SEConfig', function($resource, userConfig, SEConfig) {
     return $resource('https://api.stackexchange.com/2.2/search', {
+        // This requires a separate filter from the config
         tagged: '@tagged',
         nottagged: '@nottagged',
         intitle: '@intitle',
         sort: '@sort',
+        page: '@page',
+        key: SEConfig.key,
+        filter: '!9YdnSQVgz',
         site: userConfig.site
     }, {
         search: {
             method: 'GET',
             cache: true,
+            transformResponse: function(data) {
+                var data = JSON.parse(data);
+                var temp = data.items;
+                var tagList = {};
+                var max = 0;
+                var i, j, len, tlen; 
+
+                // Iterate through each result item, and then its tags
+                // If tag exists, add one, otherwise create new object
+                // Also check for max while at it
+                // 
+                // Classic for loops used for speed
+                for (i=0, len=temp.length; i<len; i++) {
+                    var tagtemp = temp[i].tags;
+                    for (j=0, tlen=tagtemp.length; j<tlen; j++) {
+                        if (!tagList.hasOwnProperty(tagtemp[j])) {
+                            tagList[tagtemp[j]] = 1;
+                        } else {
+                            tagList[tagtemp[j]]++;
+                        }
+                        max = (tagList[tagtemp[j]] > max) ? tagList[tagtemp[j]] : max;
+                    }
+                }
+                data.tags = tagList; 
+                data.maxTagCount = max;
+
+                return data;
+            }
         }
     });
 }]);
@@ -440,7 +597,10 @@ SearchCtrl.$inject = ['$stateParams'];
 
 .controller('UserCtrl', UserCtrl);
 
-
+/**
+ * @description
+ * Corral all of the user's information
+ */
 function UserCtrl(userProfile) {
     var vm = this;
     vm.badges = userProfile.badges();
@@ -449,6 +609,8 @@ function UserCtrl(userProfile) {
     vm.tags = userProfile.tags();
     vm.timeline = userProfile.timeline();
 
+    // Using this object to create verbs for
+    // timeline as well as assign classes
     vm.badgeConverter = {
         accepted: {
             slug: 'accepted-wrapper',
@@ -482,10 +644,14 @@ function UserCtrl(userProfile) {
 }
 UserCtrl.$inject = ['userProfile'];
 
+/**
+ * @description
+ * Check to see if a timeline item is a badge
+ */
 UserCtrl.prototype.isBadge = function(timelineItem) {
     return timelineItem.timeline_type === 'badge';
 };
-;;/**
+;/**
  * @module blizzso.user
  */
 angular.module('blizzso.user.services', [
@@ -559,7 +725,6 @@ angular.module('blizzso.user.services', [
                 order: 'desc',
             }
         }
-
     });
 }]);
 ;angular.module('blizzso.user', [
@@ -590,9 +755,6 @@ angular.module('blizzso.nicenum', [])
 
 .filter('nicenum', function() {
     return function(input) {
-        if (input === 0) return 0;
-
-
         var abbreviations = ['k', 'm', 'b'];
         var num = input;
 
@@ -617,7 +779,16 @@ angular.module('blizzso.nicenum', [])
         return num;
     };
 });
-;angular.module('blizzso.unsafe', [])
+;/**
+ * @description
+ * Create filter to process unsafe elements
+ *
+ * (Trusting you SE!)
+ *
+ * Ideally I'd include a markdown processor and use the body_markdown
+ * information instead
+ */
+angular.module('blizzso.unsafe', [])
 
 .filter('unsafe', ['$sce', function($sce) {
     return function(val) {
@@ -645,7 +816,6 @@ angular.module('blizzso.utils', [
 angular.module('blizzso.tagcloud', [])
 
 
-
 .directive('blizzsoTagCloud', function() {
     function link(scope, elem, attr) {
         scope.baseSize = 11;
@@ -654,6 +824,7 @@ angular.module('blizzso.tagcloud', [])
             scope.tags.items = data.items;
             scope.maxNum = 0;
 
+            // Vanilla for loop used for speed
             for (var i=0, len=scope.tags.items.length; i<len; i++) {
                 if (scope.maxNum < scope.tags.items[i].count) {
                     scope.maxNum = scope.tags.items[i].count;

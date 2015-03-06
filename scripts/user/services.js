@@ -72,6 +72,5 @@ angular.module('blizzso.user.services', [
                 order: 'desc',
             }
         }
-
     });
 });

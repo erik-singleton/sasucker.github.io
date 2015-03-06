@@ -18,7 +18,7 @@
             </ul>
         </div>
         <div class="question-content-wrapper grid" data-hljs-snippet>
-            <div class="owner-wrapper grid-15">
+            <div class="owner-wrapper grid-20">
                 <a href="{{ qc.question.owner.link }}">
                     <img class="profile-image" data-ng-src="{{ qc.question.owner.profile_image }}" alt="{{ qc.question.owner.display_name }} profile image">
                 </a>
@@ -29,13 +29,13 @@
                 <div class="upvote-count">{{ qc.question.up_vote_count }}</div>
                 <div class="favorite" data-ng-class="{ favorited: qc.question.favorited }" data-ng-click="qc.favorite()"></div>
             </div>
-            <div class="question-content grid-85">
+            <div class="question-content grid-80">
                 <div class="blizzbox">
                     <div data-ng-bind-html="qc.question.body|unsafe"></div>
                     <hr>
                     <div class="tag-list">
                         <span data-ng-repeat="tag in qc.question.tags">
-                            <a href="http://stackoverflow.com/questions/tagged/{{ tag }}" target="_blank">
+                            <a ui-sref="search.terms({ tagged: tag })">
                                 <span class="individual-tag">
                                     {{ tag }}
                                 </span>
@@ -50,6 +50,8 @@
                 </div>
             </div>
         </div>
+        <h3>{{ qc.question.answer_count }} Answers</h3>
+        <hr>
         <div data-ng-repeat="answer in qc.question.answers | limitTo: qc.answerLimit">
             <div data-blizzso-answer data-answer="answer" data-commentLimit="5"></div>
         </div>

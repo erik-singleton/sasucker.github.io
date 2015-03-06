@@ -13,7 +13,7 @@
         </ul>
     </div>
     <div class="answer-content-wrapper grid" data-hljs-snippet>
-        <div class="owner-wrapper grid-15">
+        <div class="owner-wrapper grid-20">
             <a href="{{ answer.owner.link }}">
                 <img class="profile-image" data-ng-src="{{ answer.owner.profile_image }}" alt="{{ answer.owner.display_name }} profile image">
             </a>
@@ -24,7 +24,7 @@
             <div class="upvote-count">{{ answer.up_vote_count }}</div>
             <div class="accepted" data-ng-if="answer.is_accepted"></div>
         </div>
-        <div class="answer-content grid-85">
+        <div class="answer-content grid-80">
             <div class="blizzbox">
                 <div data-ng-bind-html="answer.body|unsafe"></div>
             </div>

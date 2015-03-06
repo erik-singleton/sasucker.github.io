@@ -1,3 +1,11 @@
+/**
+ * @description
+ * Login directive that utilizes the StackExchange API
+ * to retrieve a new token from SE
+ *
+ * Once complete, place token in Storage and set userConfig
+ * accessToken equal to it as well
+ */
 angular.module('blizzso.login.directives', [
     'ui.router',
     'blizzso.user',
@@ -5,17 +13,15 @@ angular.module('blizzso.login.directives', [
 ])
 
 
-
-.directive('blizzsoLogin', function($state, SEConfig, SE, userConfig) {
+.directive('blizzsoLogin', function($state, $window, SEConfig, SE, userConfig) {
     function link(scope, ele, attr) {
         scope.login = function() {
             SE.authenticate({
                 success: function(data) {
-                    localStorage.setItem('accessToken', data.accessToken);
-                    localStorage.setItem('expirationDate', data.expirationDate);
+                    $window.localStorage.setItem('accessToken', data.accessToken);
+                    $window.localStorage.setItem('expirationDate', data.expirationDate);
                     userConfig.accessToken = data.accessToken;
                     $state.go('user');
-
                 },
                 error: function(data) {
                     console.log(data);

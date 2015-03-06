@@ -1,8 +1,8 @@
 <div class="individual-question">
     <div class="stats">
         <div class="box votes">
-            <span class="num" title="{{ question.up_vote_count }} questions">{{ question.up_vote_count|nicenum }}</span>
-            <div class="label">Questions</div>
+            <span class="num" title="{{ question.up_vote_count }} questions">{{ question.score|nicenum }}</span>
+            <div class="label">Votes</div>
         </div>
         <div class="box answers" 
              data-ng-class="{ 'answer-accepted': question.is_answered }">
@@ -18,7 +18,7 @@
     <div class="information">
         <div class="tag-list">
             <span data-ng-repeat="tag in question.tags">
-                <a href="http://stackoverflow.com/questions/tagged/{{ tag }}" target="_blank">
+                <a ui-sref="search.terms({ tagged: tag })">
                     <span class="individual-tag">
                         {{ tag }}
                     </span>

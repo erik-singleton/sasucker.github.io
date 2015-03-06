@@ -1,4 +1,19 @@
-<h2>We searched for things</h2>
-<div ng-repeat="(key, param) in search.$stateParams">
-    {{ key }} {{ param }}
+<div class="results-wrapper">
+    <div class="top-row">
+        <div class="results-count grid-15"><span>{{ search.results.total }}</span> Results Found</div>
+        <ul class="tabs">
+            <li class="sort-item" ui-sref-active="active"><a class="btn" ui-sref="search.terms({ sort: 'relevance' })">Relevance</a></li>
+            <li class="sort-item" ui-sref-active="active"><a class="btn" ui-sref="search.terms({ sort: 'creation' })">Date</a></li>
+            <li class="sort-item" ui-sref-active="active"><a class="btn" ui-sref="search.terms({ sort: 'activity' })">Frequent</a></li>
+            <li class="sort-item" ui-sref-active="active"><a class="btn" ui-sref="search.terms({ sort: 'votes' })">Votes</a></li>
+        </ul>
+    </div>
+    <div data-ng-repeat="result in search.results.items">
+        <div data-blizzso-question question="result"></div>
+    </div>
+    <div class="navigation-button-wrapper grid">
+        <a class="btn prev" data-ng-if="search.currentPage > 1" data-ui-sref="search.terms({ page: search.currentPage-1 })">&laquo; Prev</a>
+        <a class="btn next" data-ng-if="search.results.has_more" data-ui-sref="search.terms({ page: search.currentPage+1 })">Next &raquo;</a>
+    </div>
+    <div data-blizzso-result-cloud data-results="search.results"></div>
 </div>

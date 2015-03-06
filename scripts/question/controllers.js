@@ -17,9 +17,17 @@ function QuestionCtrl($http, userConfig, SEConfig, question) {
     vm.question = question;
     vm.commentLimit = 5;
     vm.answerLimit = 10;
-    console.log(question);
 }
 
+
+/**
+ * @description
+ * Favoriting has to be done without $resource due to how the 
+ * data is returned.  I couldn't get it to transformResponse in
+ * a format that was useable
+ *
+ * I spent longer than I care to admit trying to get that to work
+ */
 QuestionCtrl.prototype.favorite = function() {
     var vm = this;
     var favorited = vm.question.favorited ? 'undo' : '';

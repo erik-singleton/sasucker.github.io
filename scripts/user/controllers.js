@@ -3,7 +3,10 @@ angular.module('blizzso.user.controllers', [
 
 .controller('UserCtrl', UserCtrl);
 
-
+/**
+ * @description
+ * Corral all of the user's information
+ */
 function UserCtrl(userProfile) {
     var vm = this;
     vm.badges = userProfile.badges();
@@ -12,6 +15,8 @@ function UserCtrl(userProfile) {
     vm.tags = userProfile.tags();
     vm.timeline = userProfile.timeline();
 
+    // Using this object to create verbs for
+    // timeline as well as assign classes
     vm.badgeConverter = {
         accepted: {
             slug: 'accepted-wrapper',
@@ -44,6 +49,10 @@ function UserCtrl(userProfile) {
     }
 }
 
+/**
+ * @description
+ * Check to see if a timeline item is a badge
+ */
 UserCtrl.prototype.isBadge = function(timelineItem) {
     return timelineItem.timeline_type === 'badge';
 };

@@ -14,7 +14,7 @@ angular.module('blizzso.question.services', [
  *
  * Any method that requires a POST was not included due to the way 
  * $resource handles its return response (as well as the payload it
- * was sending.
+ * was sending.)
  */
 .factory('questionModel', function($resource, userConfig, SEConfig) {
     return $resource('https://api.stackexchange.com/2.2/questions/:id', {

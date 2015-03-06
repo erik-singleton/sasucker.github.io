@@ -3,6 +3,7 @@
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
+@import "compass";
 @import "compass/reset";
 @import "common";
 @import "fonts";
@@ -27,6 +28,10 @@ a {
     &:hover {
         color: $link-color;
     }
+}
+hr {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 ::selection {
     background: #19547c;
@@ -155,13 +160,17 @@ a {
 	}
 }
 .ajax-loader {
-    background-color: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.5) url(../img/ajax-load.gif) center center no-repeat;
     bottom: 0;
     left: 0;
     position: fixed;
     right: 0;
     top: 0;
 }
+
+/**
+ * User Profile
+ */
 .username-wrapper {
     padding: 40px 0 10px 0;
 }
@@ -393,6 +402,11 @@ a {
 .box {
     display: inline-block;
 }
+
+
+/**
+ * Question Page
+ */
 .owner-wrapper {
     text-align: center;
     .profile-image {
@@ -495,10 +509,6 @@ a {
             background-color: transparent;
         }
     }
-    hr {
-        border: 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.07);
-    }
     .blizzbox {
         min-height: 128px;
         position: relative;
@@ -533,6 +543,105 @@ a {
     }
 }
 
+
+/**
+ * Search Page
+ */
+
+.search-wrapper {
+    padding: 40px 0 10px 0;
+    .tag-input {
+        padding: 0 10px 0 0;
+    }
+    .nottag-input {
+        padding: 0 0 0 10px;
+    }
+    .submit {
+        background-color: #0f9ada; // Old browsers
+        border: 0;
+        color: #fff;
+        @include filter-gradient(#0f9ada, #0076ad, vertical); // IE6-9
+        @include background-image(linear-gradient(top,  #0f9ada 0%,#0076ad 100%));
+        &:hover {
+            background-color: #37c0ff; // Old browsers
+            border: 0;
+            @include filter-gradient(#37c0ff, #0097dd, vertical); // IE6-9
+            @include background-image(linear-gradient(top,  #37c0ff 0%,#0097dd 100%));
+        }
+        &:active {
+            @include filter-gradient(#006ea1, #00608d, vertical); // IE6-9
+            @include background-image(linear-gradient(top,  #006ea1 0%,#00608d 100%));
+        }
+    }
+}
+.results-wrapper {
+    margin-top: 40px;
+    .results-count {
+        color: rgba(255, 255, 255, 0.5);
+        >span {
+            color: rgba(255, 255, 255, 0.9);
+        }
+    }
+    .individual-question {
+        padding: 25px 0;
+        .question-text {
+            width: 900px;
+        }
+    }
+    .tag-cloud {
+        margin-top: 50px;
+    }
+    .btn {
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        &:active {
+            background-color: rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.07);
+            box-shadow: inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.8);
+        }
+    }
+    .prev {
+        float: left;
+    }
+    .next {
+        float: right;
+    }
+}
+.tabs {
+    .sort-item {
+        display: inline-block;
+        vertical-align: middle;
+        .btn {
+            font-size: 1em;
+        }
+    }
+    .active {
+        .btn {
+            background-color: #00aeff;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    }
+}
+label {
+    color: rgba(255, 255, 255, 0.3);
+}
+input[type=text],
+input[type=email] {
+    border: 1px solid #999, 1px solid transparent;
+    font-size: 1.1em;
+    outline: 0;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    @include transition(border 0.2s linear);
+    &:focus {
+        border: 2px solid rgba(0,174,255,0.7);
+        outline: 0;
+    }
+}
 /**
  * Footer Styling
  */
@@ -688,6 +797,34 @@ a {
 }
 .hidden {
     display: none;
+    font-size: 0;
+    line-height: 0;
     opacity: 0;
     visibility: hidden;
+}
+.btn {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
+    color: #00aeff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 1.5em;
+    font-weight: 300;
+    margin: 10px 0 0 0;
+    padding: 10px 25px 10px 25px;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    &:active {
+        background-color: rgba(0, 0, 0, 0.15);
+        border-color: rgba(255, 255, 255, 0.07);
+        box-shadow: inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.5);
+        color: rgba(255, 255, 255, 0.8);
+        padding: 12px 23px 8px 27px;
+    }
+    &:visited {
+        color: #00aeff;
+    }
 }
