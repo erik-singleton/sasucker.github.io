@@ -56,7 +56,6 @@ angular.module('blizzso', [
                 }
             },
             onEnter: function($state, userConfig) {
-                console.log('hi im login');
                 if (userConfig.loggedIn()) {
                     $state.go('^');
                 }
@@ -122,7 +121,7 @@ angular.module('blizzso', [
  * login path.  Couldn't use $state here because it's not initialized on
  * app.run I guess.
  */
-.run(function($rootScope, $location, $window, SE, SEConfig, userConfig) {
+.run(function($rootScope, $timeout, $location, $window, SE, SEConfig, userConfig) {
     SE.init({
         clientId: SEConfig.clientId,
         key: SEConfig.key,

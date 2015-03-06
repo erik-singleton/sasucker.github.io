@@ -16,5 +16,9 @@ angular.module('blizzso.loader.directives', [])
         return scope.$on('loader_hide', function() {
             return elem.addClass('ng-hide');
         });
+
+        scope.$on('event:auth-loginRequired', function() {
+            console.log('auth req');
+        })
     };
 });

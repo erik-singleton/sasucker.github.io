@@ -56,7 +56,6 @@ angular.module('blizzso', [
                 }
             },
             onEnter: function($state, userConfig) {
-                console.log('hi im login');
                 if (userConfig.loggedIn()) {
                     $state.go('^');
                 }
@@ -122,7 +121,7 @@ angular.module('blizzso', [
  * login path.  Couldn't use $state here because it's not initialized on
  * app.run I guess.
  */
-.run(function($rootScope, $location, $window, SE, SEConfig, userConfig) {
+.run(function($rootScope, $timeout, $location, $window, SE, SEConfig, userConfig) {
     SE.init({
         clientId: SEConfig.clientId,
         key: SEConfig.key,
@@ -190,6 +189,10 @@ angular.module('blizzso.loader.directives', [])
         return scope.$on('loader_hide', function() {
             return elem.addClass('ng-hide');
         });
+
+        scope.$on('event:auth-loginRequired', function() {
+            console.log('auth req');
+        })
     };
 });
 ;angular.module('blizzso.loader', [
@@ -236,7 +239,10 @@ angular.module('blizzso.loader.services', [])
             return $q.reject(resp);
         }
     };
-});
+})
+
+
+
 ;/**
  * @description
  * Login directive that utilizes the StackExchange API
@@ -280,7 +286,7 @@ angular.module('blizzso.login.directives', [
         templateUrl: 'template/login/blizzsologin.partial.html',
         replace: true,
         link: link
-    }
+    };
 });
 ;angular.module('blizzso.login', [
     'blizzso.login.directives'
@@ -513,7 +519,6 @@ SearchCtrl.prototype.submit = function() {
         scope.maxSize = 24;
         scope.maxNum = scope.results.maxTagCount;
         scope.tags = scope.results.tags;
-        console.log(scope.results);
     }
     return {
         restrict: 'EA',
@@ -684,7 +689,12 @@ angular.module('blizzso.user.services', [
             method: 'GET',
             cache: true,
             transformResponse: function(data) {
-                return JSON.parse(data).items[0];
+                var temp = JSON.parse(data);
+                if (temp.items) {
+                    return temp.items[0];
+                } else {
+                    return temp;
+                }
             }
         },
         badges: {
@@ -729,6 +739,27 @@ angular.module('blizzso.user.services', [
     'blizzso.user.controllers',
 //    'user.directives',
 ]);
+;angular.module('blizzso.exploremenu', [])
+
+
+.directive('blizzsoExplore', function($timeout) {
+    function link(scope, ele, attr) {
+        scope.showMenu = false;
+        scope.toggleMenu = function() {
+            $timeout(function() {
+                ele.toggleClass('active');
+                angular.element(ele.children()[1]).toggleClass('ng-hide');
+            });
+        }
+    }
+    return {
+        scope: {},
+        restrict: 'EA',
+        templateUrl: 'template/core/blizzsoexplore.partial.html',
+        replace: true,
+        link: link
+    };
+});
 ;/**
  * @description
  * StackExchange api returns timestamps in seconds,
@@ -797,6 +828,7 @@ angular.module('blizzso.unsafe', [])
  * Groups up all of the utility modules into one utils module
  */
 angular.module('blizzso.utils', [
+    'blizzso.exploremenu',
     'blizzso.milliseconds',
     'blizzso.nicenum',
     'blizzso.tagcloud',

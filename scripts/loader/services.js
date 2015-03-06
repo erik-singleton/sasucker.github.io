@@ -30,4 +30,7 @@ angular.module('blizzso.loader.services', [])
             return $q.reject(resp);
         }
     };
-});
+})
+
+
+

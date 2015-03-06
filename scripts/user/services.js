@@ -34,7 +34,12 @@ angular.module('blizzso.user.services', [
             method: 'GET',
             cache: true,
             transformResponse: function(data) {
-                return JSON.parse(data).items[0];
+                var temp = JSON.parse(data);
+                if (temp.items) {
+                    return temp.items[0];
+                } else {
+                    return temp;
+                }
             }
         },
         badges: {

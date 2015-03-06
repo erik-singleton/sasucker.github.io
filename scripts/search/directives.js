@@ -7,7 +7,6 @@ angular.module('blizzso.search.directives', [])
         scope.maxSize = 24;
         scope.maxNum = scope.results.maxTagCount;
         scope.tags = scope.results.tags;
-        console.log(scope.results);
     }
     return {
         restrict: 'EA',

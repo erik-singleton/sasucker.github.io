@@ -41,5 +41,5 @@ angular.module('blizzso.login.directives', [
         templateUrl: 'template/login/blizzsologin.partial.html',
         replace: true,
         link: link
-    }
+    };
 });
