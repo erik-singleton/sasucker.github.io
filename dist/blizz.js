@@ -459,7 +459,7 @@ angular.module('blizzso.question.services', [
 .constant('SEConfig', {
     clientId: 4378,
     key: 'Re3GNAs1lf8dHOTZn3S5Gw((',
-    channelUrl: 'http://dev.eriksingleton.com/blizzard/sasucker.github.io/blank/',
+    channelUrl: 'http://sasucker.github.io/blank/',
     filter: '!Wq.reBhTC*mybEAh961k3.)jNlZdP5g-wIcnBX6',
 })
 
