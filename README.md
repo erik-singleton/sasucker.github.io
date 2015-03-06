@@ -41,4 +41,11 @@ I utilize SASS with Compass. My SASS file ended up being larger than anticipated
 * The logout button at the top is not conditional; this is due to how I structured the home page. There is one ui-view element in the body where all of the templates are injected; the menu at the top is a part of the base template and does not appear to get redrawn on digest cycles (even with a directive associated with it).
   * I would restructure the page to have 3 ui-views; one for header body and footer.
 
+### Document Structure
+
+* All source js files are located in scripts/
+* sass/ has all of the SASS files
+* Templates are stored in template/ directory
+* Assets are from bower_components/
+* Production minified scripts are located in dist/
 
